@@ -1,5 +1,5 @@
 Airtime script
-============
+==============
 
 collect Airtime - with newer Gluon respondd 
 
@@ -51,29 +51,30 @@ The Patch for Meshviewer or Hopglass is also quiet simple (and should work on ho
 < 
 232,245d211
 <     if (typeof d.nodeinfo.network.wireless !== "undefined") {
-<     if (d.nodeinfo.network.wireless)
-<       attributeEntry(attributes, "Kanal 2,4 GHz",  dictGet(d.nodeinfo.network, ["wireless", "chan2"]))
+<     if (d.nodeinfo.wireless)
+<       attributeEntry(attributes, "Kanal 2,4 GHz",  dictGet(d.nodeinfo, ["wireless", "chan2"]))
 < 
-<     if (d.nodeinfo.network.wireless)
-<       attributeEntry(attributes, "Kanal 5 GHz",  dictGet(d.nodeinfo.network, ["wireless", "chan5"]))
+<     if (d.nodeinfo.wireless)
+<       attributeEntry(attributes, "Kanal 5 GHz",  dictGet(d.nodeinfo, ["wireless", "chan5"]))
 < 
-<     if (d.nodeinfo.network.wireless)
+<     if (d.nodeinfo.wireless)
 <       attributeEntry(attributes, "Airtime 2,4",  showAIRTIME2(d))
 < 
-<     if (d.nodeinfo.network.wireless)
+<     if (d.nodeinfo..wireless)
 <       attributeEntry(attributes, "Airtime 5",  showAIRTIME5(d))
 <     }
 < 
 ```
+(note channel actually not buildin in respondd.so)
 
 remeber: It is quite basic!
 
 Create a file "modules" with the following content in your site directory:
-
+```
 GLUON_SITE_FEEDS="airtime"<br>
 PACKAGES_SSIDCHANGER_REPO=https://github.com/viisauksena/gluon-airtime.git<br>
 PACKAGES_SSIDCHANGER_COMMIT=abcdef0123456789....a100d6b067fc410068e7521d<br>
 PACKAGES_SSIDCHANGER_BRANCH=master<br>
-
+```
 With this done you can add the package gluon-airtime to your site.mk
 
