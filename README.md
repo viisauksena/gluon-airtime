@@ -28,39 +28,29 @@ The Patch for Meshviewer or Hopglass is also quiet simple (and should work on ho
 
 ```
 # diff lib/infobox/node.js lib/infobox/node.js_bak 
-155,174d154
+155,168d154
 <   function showAIRTIME2(d) {
-<     if (!("airtime2" in d.nodeinfo.network.wireless))
-<       return undefined
-< 
+<     var air2 = 1 / ( d.nodeinfo.wireless.act2 / d.nodeinfo.wireless.bus2 )
 <     return function (el) {
-<       el.appendChild(showBar("Airtime2", d.nodeinfo.wireless.act2))
-<       el.appendChild(showBar("Airtime2", d.nodeinfo.wireless.bus2))
+<       el.appendChild(showBar("2400MhzTxRx", air2))
+<       }
 <     }
-<   }
 < 
 <   function showAIRTIME5(d) {
-<     if (!("airtime5" in d.nodeinfo.network.wireless))
-<       return undefined
-< 
+<     var air5 = 1 / ( d.nodeinfo.wireless.act5 / d.nodeinfo.wireless.bus5 )
 <     return function (el) {
-<       el.appendChild(showBar("Airtime5", d.nodeinfo.wireless.act5))
-<       el.appendChild(showBar("Airtime5", d.nodeinfo.wireless.bus5))
+<         el.appendChild(showBar("5000MhzTxRx", air5))
+<         }
 <     }
-<   }
 < 
-232,245d211
-<     if (typeof d.nodeinfo.network.wireless !== "undefined") {
-<     if (d.nodeinfo.wireless)
-<       attributeEntry(attributes, "Kanal 2,4 GHz",  dictGet(d.nodeinfo, ["wireless", "chan2"]))
+226,235d211
 < 
-<     if (d.nodeinfo.wireless)
-<       attributeEntry(attributes, "Kanal 5 GHz",  dictGet(d.nodeinfo, ["wireless", "chan5"]))
+<     if (typeof d.nodeinfo.wireless !== "undefined") {
 < 
-<     if (d.nodeinfo.wireless)
+<     if (d.nodeinfo.wireless.act2)
 <       attributeEntry(attributes, "Airtime 2,4",  showAIRTIME2(d))
 < 
-<     if (d.nodeinfo..wireless)
+<     if (d.nodeinfo.wireless.act5)
 <       attributeEntry(attributes, "Airtime 5",  showAIRTIME5(d))
 <     }
 < 
