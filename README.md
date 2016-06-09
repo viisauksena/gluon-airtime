@@ -4,24 +4,25 @@ Airtime script
 collect Airtime - with newer Gluon respondd 
 
 actually we reuse airtime basic script written for old gluon 2015.1 from announced from https://github.com/ffgtso/ffgt_packages-v2015.1/tree/master/gluon-airtime
-and make a cronjob to gather data in /tmp folder, most important /tmp/act2 (which is active in seconds) and /tmp/bus2 (which is busy in seconds = rx and tx together) .. so with a little bit of math you can get averages .. maybe i will add a line to airtime script to get /tmp/air2avg
+and make a cronjob to gather data in /tmp folder, most important /tmp/act2 (which is active in seconds) and /tmp/bus2 (which is busy in seconds = rx and tx together) .. so with a little bit of math you can get averages ..
 
 we do a little micron.d cronjob to run it often ...
 
 now we need respondd to also collect these data, i have a running version - but this meant i had to compile it in the beginning, hope for other solutions .. otherwise we need a patch before we build actual firmware. The patch is quiet simple.
-in gluon-respondd/src we add to the block **static struct json_object * respondd_provider_nodeinfo(void) {**
+in gluon-respondd/src we add some lines the block **static struct json_object * respondd_provider_nodeinfo(void) {**
 ```c
         struct json_object *wireless = json_object_new_object();
         json_object_object_add(wireless, "act2", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/act2")));
         json_object_object_add(wireless, "bus2", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/bus2")));
         json_object_object_add(ret, "wireless", wireless);
 ```
+(obviously only 2.4ghz now)
 (for those who quickly want to test it i added a example respondd - exchange it with /lib/gluon/respondd/respondd.so on your node)
 
 if you come so far, your nodes will spread the info : this looks like 
 ```
 # gluon-neighbour-info -d ::1 -p 1001 -t 1 -c 1 -r nodeinfo
-{"software":{"autoupdater":{"branch":"support","enabled":false},"batman-adv":{"version":"2013.4.0","compat":14},"fastd":{"version":"v18","enabled":true},"firmware":{"base":"gluon-v2016.1-165-ga852056","release":"v0000.externffgt"},"status-page":{"api":1}},"network":{"addresses":["fdf0:9bb:7814:a630:c66e:1fff:fe2d:4dee","2a03:2260:100e:23:c66e:1fff:fe2d:4dee","fe80::c66e:1fff:fe2d:4dee"],"mesh":{"bat0":{"interfaces":{"wireless":["f2:12:b5:a9:fd:7a"],"tunnel":["f2:12:b5:a9:fd:78"]}}},"mac":"c4:6e:1f:2d:4d:ee"},"owner":{"contact":"kaulquappen supäää"},"system":{"role":"node","site_code":"fffr"},"node_id":"c46e1f2d4dee","hostname":"fuzzle_solar","hardware":{"model":"TP-Link TL-WR841N\/ND v9","nproc":1},"wireless":{"wireless_act":"5285166","wireless_bus":"1744874"}}
+{"software":{"autoupdater":{"branch":"support","enabled":false},"batman-adv":{"version":"2013.4.0","compat":14},"fastd":{"version":"v18","enabled":true},"firmware":{"base":"gluon-v2016.1-165-ga852056","release":"v0000.externffgt"},"status-page":{"api":1}},"network":{"addresses":["fdf0:9bb:7814:a630:c66e:1fff:fe2d:4dee","2a03:2260:100e:23:c66e:1fff:fe2d:4dee","fe80::c66e:1fff:fe2d:4dee"],"mesh":{"bat0":{"interfaces":{"wireless":["f2:12:b5:a9:fd:7a"],"tunnel":["f2:12:b5:a9:fd:78"]}}},"mac":"c4:6e:1f:2d:4d:ee"},"owner":{"contact":"kaulquappen supäää"},"system":{"role":"node","site_code":"fffr"},"node_id":"c46e1f2d4dee","hostname":"fuzzle_solar","hardware":{"model":"TP-Link TL-WR841N\/ND v9","nproc":1},"wireless":{"act2":"4489951","bus2":"1287292"}}
 ```
 
 The Patch for Meshviewer or Hopglass is also quiet simple (and should work on hopglass and meshviewer with slight corrections)
@@ -52,8 +53,7 @@ The Patch for Meshviewer or Hopglass is also quiet simple (and should work on ho
 < 
 <     if (d.nodeinfo.wireless.act5)
 <       attributeEntry(attributes, "Airtime 5",  showAIRTIME5(d))
-<     }
-< 
+<   
 ```
 (note channel actually not buildin in respondd.so)
 
