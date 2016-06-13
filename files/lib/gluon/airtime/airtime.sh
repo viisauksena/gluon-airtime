@@ -1,5 +1,4 @@
-#!/bin/sh
-# script based on : https://github.com/ffgtso/ffgt_packages-v2015.1/blob/master/gluon-airtime/files/lib/gluon/airtime/airtime.sh
+i#!/bin/sh 
 # Setup once at runtime ...
 # ... after at least 5 minutes of uptime have passed:
 uptime=`awk </proc/uptime 'BEGIN{uptime=0;} {uptime=sprintf("%d", $1);} END{print uptime;}'`
@@ -8,46 +7,52 @@ if [ $uptime -lt 300 ]; then
   exit 0
 fi
 
-if [ ! -e /tmp/airtime.in ]; then
-  echo "DEV2G=\"\""  > /tmp/airtime.in
-  echo "DEV5G=\"\"" >> /tmp/airtime.in
+# get actual airtime
+channel=$(iw client0 survey dump |grep "in use" -A5|grep -o "24.."|head -n1)
+total=$(iw client0 survey dump |grep "in use" -A5|grep active|grep -o "[0-9]*")
+tx=$(iw client0 survey dump |grep "in use" -A5|grep transmit|grep -o "[0-9]*")
+busy=$(iw client0 survey dump |grep "in use" -A5|grep busy|grep -o "[0-9]*")
 
-  if [ ! -e /tmp/client0.info ]; then
-    iw dev client0 info >/tmp/client0.info 2>/dev/null
-  fi
+mkdir -p /tmp/xtra
+if [ ! -f /tmp/2gtotallast ]; then echo 0 > /tmp/2gtotallast; fi
+if [ ! -f /tmp/2gtxlast ]; then echo 0 > /tmp/2gtxlast; fi
+if [ ! -f /tmp/2gbuslast ]; then echo 0 > /tmp/2gbuslast; fi
 
-  if [ ! -e /tmp/client1.info ]; then
-    iw dev client1 info >/tmp/client1.info 2>/dev/null
-  fi
+# calc airtime to file
+echo $(( $total - $(cat /tmp/2gtotallast|tail -n1) )) > /tmp/xtra/2gtotal
+echo $(( $tx - $(cat /tmp/2gtxlast|tail -n1) )) > /tmp/xtra/2gtx
+echo $(( $busy - $(cat /tmp/2gbuslast|tail -n1) )) > /tmp/xtra/2gbus
 
-  awk </tmp/client0.info '/^Interface/ {intf=$2;} /channel/ {ghz=$3; ghz=substr(ghz, 2, 1); printf("DEV%sG=%s\n", ghz, intf);}' >>/tmp/airtime.in
-  awk </tmp/client1.info '/^Interface/ {intf=$2;} /channel/ {ghz=$3; ghz=substr(ghz, 2, 1); printf("DEV%sG=%s\n", ghz, intf);}' >>/tmp/airtime.in
-  cat /tmp/client*.info | awk '/^Interface/ {intf=$2;} /channel/ {ghz=$3; ghz=substr(ghz, 2, 1); if(ghz=="2") {gsub("client", "radio", intf); printf("%s", intf);}}' >>/tmp/radio2G
-  cat /tmp/client*.info | awk '/^Interface/ {intf=$2;} /channel/ {ghz=$3; ghz=substr(ghz, 2, 1); if(ghz=="5") {gsub("client", "radio", intf); printf("%s", intf);}}' >>/tmp/radio5G
-fi
+# calc24h avg max min
+sumtotal=0
+date +%M |grep [0-5]0 && for line in $(cat /tmp/xtra/2gtx24h); do let sumtotal+=$line; done 
+date +%M |grep [0-5]0 && echo $(( $sumtotal / $(cat /tmp/xtra/2gtotal24h|wc -l) )) > /tmp/xtra/2gtotal24havg
+cat /tmp/xtra/2gtotal24h|sort |tail -n1 > /tmp/xtra/2gtotal24hmin
+cat /tmp/xtra/2gtotal24h|sort |head -n1 > /tmp/xtra/2gtotal24hmax
+sumtx=0
+date +%M |grep [0-5]0 && for line in $(cat /tmp/xtra/2gtx24h); do let sumtx+=$line; done
+date +%M |grep [0-5]0 && echo $(( $sumtx / $(cat /tmp/xtra/2gtx24h|wc -l) )) > /tmp/xtra/2gtx24havg
+cat /tmp/xtra/2gtx24h|sort|tail -n1 > /tmp/xtra/2gtx24hmin
+cat /tmp/xtra/2gtx24h|sort|head -n1 > /tmp/xtra/2gtx24hmax
+sumbus=0
+date +%M |grep [0-5]0 && for line in $(cat /tmp/xtra/2gbus24h); do let sumbus+=$line; done
+date +%M |grep [0-5]0 && echo $(( $sumbus / $(cat /tmp/xtra/2gbus24h|wc -l) )) > /tmp/xtra/2gbus24havg
+cat /tmp/xtra/2gbus24h|sort|tail -n1 > /tmp/xtra/2gbus24hmin
+cat /tmp/xtra/2gbus24h|sort|head -n1 > /tmp/xtra/2gbus24hmax
 
-source /tmp/airtime.in
+# write act to tmp file,
+echo $total > /tmp/2gtotallast
+echo $tx > /tmp/2gtxlast
+echo $busy > /tmp/2gbuslast
 
-#echo $DEV2G $DEV5G
+# write and limit to 24h (=1440 lines per file)
+echo $((($channel - 2407 )/ 5)) > /tmp/xtra/channel
+cat /tmp/xtra/2gtotal >> /tmp/xtra/2gtotal24h ; cat /tmp/xtra/2gtotal24h |tail -n 1440 > /tmp/2gtotaltmp ; mv /tmp/2gtotaltmp /tmp/xtra/2gtotal24h
+cat /tmp/xtra/2gtx >> /tmp/xtra/2gtx24h ; cat /tmp/xtra/2gtx24h |tail -n 1440 > /tmp/2gtxtmp ; mv /tmp/2gtxtmp /tmp/xtra/2gtx24h
+cat /tmp/xtra/2gbus >> /tmp/xtra/2gbus24h; cat /tmp/xtra/2gbus24h |tail -n 1440 > /tmp/2gbustmp ; mv /tmp/2gbustmp /tmp/xtra/2gbus24h
 
-if [ "X$DEV2G" != "X" ]; then
-  iw dev $DEV2G survey dump > /tmp/24dump
-  if [ $? -eq 0 ]; then
-    cat /tmp/24dump | sed '/Survey/,/\[in use\]/d'  > /tmp/24reduced
-    ACT_CUR=$(ACTIVE=$(cat /tmp/24reduced | grep "active time:"); set ${ACTIVE:-0 0 0 0 0}; echo -e "${4}")
-    BUS_CUR=$(BUSY=$(cat /tmp/24reduced | grep "busy time:"); set ${BUSY:-0 0 0 0 0}; echo -e "${4}")
-    echo $ACT_CUR > /tmp/act2
-    echo $BUS_CUR > /tmp/bus2
-  fi
-fi
+# bonus
+batctl gwl |grep = |cut -d")" -f1|grep -o [0-9]*$ > /tmp/xtra/batttvn
+batctl gwl |grep = |cut -d"]" -f1|grep -o [0-9a-zA-Z-]*$ > /tmp/xtra/batif
 
-if [ "X$DEV5G" != "X" ]; then
-  iw dev $DEV5G survey dump > /tmp/5dump
-  if [ $? -eq 0 ]; then
-    cat /tmp/5dump | sed '/Survey/,/\[in use\]/d'  > /tmp/5reduced
-    ACT_CUR=$(ACTIVE=$(cat /tmp/5reduced | grep "active time:"); set ${ACTIVE:-0 0 0 0 0}; echo -e "${4}")
-    BUS_CUR=$(BUSY=$(cat /tmp/5reduced | grep "busy time:"); set ${BUSY:-0 0 0 0 0}; echo -e "${4}")
-    echo $ACT_CUR > /tmp/act5
-    echo $BUS_CUR > /tmp/bus5
-  fi
-fi
+
