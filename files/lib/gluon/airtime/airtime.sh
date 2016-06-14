@@ -1,4 +1,4 @@
-i#!/bin/sh 
+#!/bin/sh 
 # Setup once at runtime ...
 # ... after at least 5 minutes of uptime have passed:
 uptime=`awk </proc/uptime 'BEGIN{uptime=0;} {uptime=sprintf("%d", $1);} END{print uptime;}'`
