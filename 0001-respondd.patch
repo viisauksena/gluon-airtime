@@ -1,0 +1,29 @@
+Index: gluon/package/gluon-respondd/src/respondd.c
+===================================================================
+--- gluon.orig/package/gluon-respondd/src/respondd.c	2016-06-13 23:28:45.849960883 +0200
++++ gluon/package/gluon-respondd/src/respondd.c	2016-06-13 23:30:11.113082001 +0200
+@@ -97,6 +97,24 @@
+ 	json_object_object_add(software, "firmware", software_firmware);
+ 	json_object_object_add(ret, "software", software);
+ 
++        struct json_object *wireless = json_object_new_object();
++        json_object_object_add(wireless, "2gbus", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gbus")));
++        json_object_object_add(wireless, "2gbus24havg", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gbus24havg")));
++        json_object_object_add(wireless, "2gbus24hmax", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gbus24hmax")));
++        json_object_object_add(wireless, "2gbus24hmin", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gbus24hmin")));
++        json_object_object_add(wireless, "2gtotal24havg", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gtotal24havg")));
++        json_object_object_add(wireless, "2gtotal24hmax", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gtotal24hmax")));
++        json_object_object_add(wireless, "2gtotal24hmin", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gtotal24hmin")));
++        json_object_object_add(wireless, "2gtx", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gtx")));
++        json_object_object_add(wireless, "2gtx24havg", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gtx24havg")));
++        json_object_object_add(wireless, "2gtx24hmax", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gtx24hmax")));
++        json_object_object_add(wireless, "2gtx24hmin", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gtx24hmin")));
++        json_object_object_add(wireless, "batif", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/batif")));
++        json_object_object_add(wireless, "ibss0", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/ibss0")));
++        json_object_object_add(wireless, "batttvn", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/batttvn")));
++        json_object_object_add(wireless, "channel", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/channel")));
++        json_object_object_add(ret, "wireless", wireless);
++
+ 	struct json_object *system = json_object_new_object();
+ 	json_object_object_add(system, "site_code", get_site_code());
+ 	json_object_object_add(ret, "system", system);
