@@ -32,13 +32,13 @@ cat /tmp/xtra/2gtotal24h|sort |head -n1 > /tmp/xtra/2gtotal24hmax
 sumtx=0
 date +%M |grep [0-5]0 && for line in $(cat /tmp/xtra/2gtx24h); do let sumtx+=$line; done
 date +%M |grep [0-5]0 && echo $(( $sumtx / $(cat /tmp/xtra/2gtx24h|wc -l) )) > /tmp/xtra/2gtx24havg
-cat /tmp/xtra/2gtx24h|sort|tail -n1 > /tmp/xtra/2gtx24hmin
-cat /tmp/xtra/2gtx24h|sort|head -n1 > /tmp/xtra/2gtx24hmax
+cat /tmp/xtra/2gtx24h|sort -n|tail -n1 > /tmp/xtra/2gtx24hmin
+cat /tmp/xtra/2gtx24h|sort -n|head -n1 > /tmp/xtra/2gtx24hmax
 sumbus=0
 date +%M |grep [0-5]0 && for line in $(cat /tmp/xtra/2gbus24h); do let sumbus+=$line; done
 date +%M |grep [0-5]0 && echo $(( $sumbus / $(cat /tmp/xtra/2gbus24h|wc -l) )) > /tmp/xtra/2gbus24havg
-cat /tmp/xtra/2gbus24h|sort|tail -n1 > /tmp/xtra/2gbus24hmin
-cat /tmp/xtra/2gbus24h|sort|head -n1 > /tmp/xtra/2gbus24hmax
+cat /tmp/xtra/2gbus24h|sort -n|tail -n1 > /tmp/xtra/2gbus24hmin
+cat /tmp/xtra/2gbus24h|sort -n|head -n1 > /tmp/xtra/2gbus24hmax
 
 # write act to tmp file,
 echo $total > /tmp/2gtotallast

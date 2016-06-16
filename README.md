@@ -74,7 +74,7 @@ Index: gluon/package/gluon-respondd/src/respondd.c
 +        json_object_object_add(wireless, "2gtx24hmax", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gtx24hmax")));
 +        json_object_object_add(wireless, "2gtx24hmin", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/2gtx24hmin")));
 +        json_object_object_add(wireless, "batif", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/batif")));
-+        json_object_object_add(wireless, "ibss0", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/ibss0")));
++
 +        json_object_object_add(wireless, "batttvn", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/batttvn")));
 +        json_object_object_add(wireless, "channel", gluonutil_wrap_and_free_string(gluonutil_read_line("/tmp/xtra/channel")));
 +        json_object_object_add(ret, "wireless", wireless);
