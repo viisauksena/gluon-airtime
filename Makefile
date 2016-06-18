@@ -1,7 +1,7 @@
-ude $(TOPDIR)/rules.mk
+include $(TOPDIR)/rules.mk
 
 PKG_NAME:=gluon-airtime
-PKG_VERSION:=1
+PKG_VERSION:=1.1
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
@@ -11,7 +11,7 @@ define Package/gluon-airtime
   SECTION:=gluon
   CATEGORY:=Gluon
   TITLE:=Airtime reporter
-  DEPENDS:=+gluon-core
+  DEPENDS:=+gluon-core +micrond
 endef
 
 define Build/Prepare
