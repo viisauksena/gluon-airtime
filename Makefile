@@ -29,7 +29,7 @@ define Package/gluon-airtime/install
         $(CP) ./files/* $(1)/
 	
 	$(INSTALL_DIR) $(1)/lib/gluon/respondd
-	$(CP) $(PKG_BUILD_DIR)/respondd.so $(1)/lib/gluon/respondd/airtime.so
+#	$(CP) $(PKG_BUILD_DIR)/respondd.so $(1)/lib/gluon/respondd/airtime.so
 
 endef
 
