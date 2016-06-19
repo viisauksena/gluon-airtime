@@ -15,7 +15,8 @@ define Package/gluon-airtime
 endef
 
 define Build/Prepare
-        mkdir -p $(PKG_BUILD_DIR)
+	mkdir -p $(PKG_BUILD_DIR)
+	$(CP) ./src/* $(PKG_BUILD_DIR)/
 endef
 
 define Build/Configure
@@ -26,6 +27,10 @@ endef
 
 define Package/gluon-airtime/install
         $(CP) ./files/* $(1)/
+	
+	$(INSTALL_DIR) $(1)/lib/gluon/respondd
+	$(CP) $(PKG_BUILD_DIR)/respondd.so $(1)/lib/gluon/respondd/airtime.so
+
 endef
 
 $(eval $(call BuildPackage,gluon-airtime))
