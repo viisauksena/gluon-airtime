@@ -25,7 +25,7 @@ echo $(( $busy - $(cat /tmp/2gbuslast|tail -n1) )) > /tmp/xtra/2gbus
 
 # calc24h avg max min
 sumtotal=0
-date +%M |grep [0-5]0 && for line in $(cat /tmp/xtra/2gtx24h); do let sumtotal+=$line; done 
+date +%M |grep [0-5]0 && for line in $(cat /tmp/xtra/2gtotal24h); do let sumtotal+=$line; done 
 date +%M |grep [0-5]0 && echo $(( $sumtotal / $(cat /tmp/xtra/2gtotal24h|wc -l) )) > /tmp/xtra/2gtotal24havg
 cat /tmp/xtra/2gtotal24h|sort -n |head -n1 > /tmp/xtra/2gtotal24hmin
 cat /tmp/xtra/2gtotal24h|sort -n |tail -n1 > /tmp/xtra/2gtotal24hmax
