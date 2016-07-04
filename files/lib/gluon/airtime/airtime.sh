@@ -53,6 +53,5 @@ cat /tmp/xtra/2gbus >> /tmp/xtra/2gbus24h; cat /tmp/xtra/2gbus24h |tail -n 1440 
 
 # bonus
 batctl gwl |grep = |cut -d")" -f1|grep -o [0-9]*$ > /tmp/xtra/batttvn
-batctl gwl |grep = |cut -d"]" -f1|grep -o [0-9a-zA-Z-]*$ > /tmp/xtra/batif
-
+batctl gwl |grep = |cut -d"]" -f1|grep -o [0-9a-zA-Z_-]*$ > /tmp/xtra/batif
 
