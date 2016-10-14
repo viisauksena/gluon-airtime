@@ -28,7 +28,7 @@ endef
 
 define Package/gluon-airtime/install
         $(CP) ./files/* $(1)/
-	$(CP) $(PKG_BUILD_DIR)/luadest/* $(1)/
+#	$(CP) $(PKG_BUILD_DIR)/luadest/* $(1)/
 	$(INSTALL_DIR) $(1)/lib/gluon/respondd
 	$(CP) $(PKG_BUILD_DIR)/respondd.so $(1)/lib/gluon/respondd/airtime.so
 endef
