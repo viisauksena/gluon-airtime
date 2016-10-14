@@ -24,6 +24,7 @@ define Build/Configure
 endef
 
 define Build/Compile
+        $(call Build/Compile/Default)
 endef
 
 define Package/gluon-airtime/install
